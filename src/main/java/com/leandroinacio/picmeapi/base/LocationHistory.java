@@ -1,3 +1,4 @@
+package com.leandroinacio.picmeapi.base;
 //package com.leandroinacio.picmeapi.model;
 //
 //import javax.persistence.Column;

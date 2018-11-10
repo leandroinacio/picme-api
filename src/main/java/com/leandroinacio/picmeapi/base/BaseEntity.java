@@ -1,4 +1,4 @@
-package com.leandroinacio.picmeapi.model;
+package com.leandroinacio.picmeapi.base;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -43,6 +43,7 @@ import lombok.Data;
     @PrePersist
     protected void onCreate() {
       this.createDate = Calendar.getInstance();
+      this.modifiedDate = Calendar.getInstance();
     }
 
     @PreUpdate

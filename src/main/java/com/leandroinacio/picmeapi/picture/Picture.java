@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-import com.leandroinacio.picmeapi.model.BaseEntity;
+import com.leandroinacio.picmeapi.base.BaseEntity;
 import com.leandroinacio.picmeapi.user.User;
 
 import lombok.Data;
