@@ -1,39 +1,43 @@
 package com.leandroinacio.picmeapi.picture;
 
-import java.util.BitSet;
+import java.util.List;
 
-import javax.persistence.Column;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 import com.leandroinacio.picmeapi.model.BaseEntity;
-
-//import javax.persistence.JoinColumn;
-//import javax.persistence.ManyToOne;
+import com.leandroinacio.picmeapi.user.User;
 
 import lombok.Data;
 
-@Entity
-@Table(name = "Picture")
+@Entity @Table
 @Data public class Picture extends BaseEntity {
 
-//	@ManyToOne
-//	@JoinColumn(name = "Id")
-//	private Photographer photographer;
-	
-	@NotEmpty
-	@Column(name = "Content")
-	private BitSet content;
-	
-	@Column(name = "Description")
 	private String description;
+
+	@NotEmpty
+	private String fileType;
 	
 	@NotEmpty
-	@Column(name = "Latitude")
 	private Double latitude;
 	
 	@NotEmpty
-	@Column(name = "Longitude")
 	private Double longitude;
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@NotEmpty @JoinColumn
+	private User photographer;
+
+	@ManyToMany(cascade = CascadeType.ALL)
+	@NotEmpty @JoinColumn
+	private List<User> owner;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	@NotEmpty @JoinColumn
+	private List<User> faceMatch;
 }

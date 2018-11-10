@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,7 +23,7 @@ public class UserController {
 	private IUserService userService;
 	
 	@PutMapping("/save")
-	public @ResponseBody HttpStatus save(@RequestBody User user) {
+	public HttpStatus save(@RequestBody User user) {
 		try {
 			userService.save(user);
 			return HttpStatus.OK;
@@ -33,16 +33,10 @@ public class UserController {
 		}
 	}
 	
-	@GetMapping("/welcome")
-	public String welcome() {
-		return "welcome";
-	}
-	
 	@GetMapping("/findById/{id}")
-	public @ResponseBody User findById(@PathVariable("id") Integer id) {
+	public @ResponseBody User findById(@PathVariable("id") Long id) {
 		try {
-			User user = userService.findById(id);
-			return user;
+			return userService.findById(id);
 		}catch(Exception e) {
 			log.error(e.getMessage());
 			return null;
@@ -50,24 +44,33 @@ public class UserController {
 	}
 	
 	@GetMapping("/findByEmail/{email}")
-	public ResponseEntity<User> findByEmail(@PathVariable("email") String email) {
+	public @ResponseBody User findByEmail(@PathVariable("email") String email) {
 		try {
-			User user = userService.findByEmail(email);
-			return new ResponseEntity<User>(user, HttpStatus.OK);
+			return userService.findByEmail(email);
 		}catch(Exception e) {
 			log.error(e.getMessage());
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return null;
 		}
 	}
 	
 	@GetMapping("/findByName/{name}")
-	public ResponseEntity<User> findByName(@PathVariable("name") String name) {
+	public @ResponseBody User findByName(@PathVariable("name") String name) {
 		try {
-			User user = userService.findByName(name);
-			return new ResponseEntity<User>(user, HttpStatus.OK);
+			return userService.findByName(name);
 		}catch(Exception e) {
 			log.error(e.getMessage());
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return null;
+		}
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public HttpStatus delete(@PathVariable("id") Long id) {
+		try {
+			userService.deleteById(id);
+			return HttpStatus.OK;
+		}catch(Exception e) {
+			log.error(e.getMessage());
+			return HttpStatus.INTERNAL_SERVER_ERROR;
 		}
 	}
 }

@@ -1,8 +1,5 @@
 package com.leandroinacio.picmeapi.user;
 
-import java.time.LocalDateTime;
-import java.util.Calendar;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +14,10 @@ public class UserService implements IUserService {
 	private IUserRepository userRepository;
 	
 	public void save(User user) {
-		
-		// Update create date and modified date
-		if (user.getId() == null || user.getId() == 0) {
-			user.setCreateDate(Calendar.getInstance());
-		}
-		user.setModifiedDate(Calendar.getInstance());
 		userRepository.save(user);
 	}
 	
-	public User findById(Integer id) {
+	public User findById(Long id) {
 		return userRepository.findById(id);
 	}
 	
@@ -36,6 +27,10 @@ public class UserService implements IUserService {
 	
 	public User findByName(String name) {
 		return userRepository.findByName(name);
+	}
+	
+	public void deleteById(Long id) {
+		userRepository.deleteById(id);
 	}
 	
 }

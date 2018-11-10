@@ -8,8 +8,7 @@ import com.leandroinacio.picmeapi.model.BaseEntity;
 
 import lombok.Data;
 
-@Entity
-@Table(name = "UserAccount")
+@Entity @Table(name = "UserAccount")
 @Data public class User extends BaseEntity {
 
 	@NotEmpty

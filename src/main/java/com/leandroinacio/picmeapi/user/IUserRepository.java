@@ -5,13 +5,13 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface IUserRepository extends Repository<User, Integer>{
+public interface IUserRepository extends Repository<User, Long>{
 
 	public void save(User user);
 	
 	@Query("SELECT user FROM User user WHERE user.id =:id")
 	@Transactional(readOnly=true)
-	public User findById(@Param("id") Integer id);
+	public User findById(@Param("id") Long id);
 	
 	@Query("SELECT user FROM User user WHERE user.name =:name")
 	@Transactional(readOnly=true)
@@ -20,5 +20,7 @@ public interface IUserRepository extends Repository<User, Integer>{
 	@Query("SELECT user FROM User user WHERE user.email =:email")
 	@Transactional(readOnly=true)
 	public User findByEmail(@Param("email") String email);
+	
+	public void deleteById(Long id);
 	
 }

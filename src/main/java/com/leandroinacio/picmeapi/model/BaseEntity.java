@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.leandroinacio.picmeapi.utils.DateUtils;
 
 import lombok.Data;
 
@@ -29,14 +30,14 @@ import lombok.Data;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Id	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Integer id;		
+	private Long id;		
 	
 	@NotNull @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm:ss.SSSZ")
+    @DateTimeFormat(pattern = DateUtils.DEFAULT_FORMAT)
 	private Calendar createDate;
 	
 	@NotNull @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm:ss.SSSZ")
+    @DateTimeFormat(pattern = DateUtils.DEFAULT_FORMAT)
 	private Calendar modifiedDate;
     
     @PrePersist
