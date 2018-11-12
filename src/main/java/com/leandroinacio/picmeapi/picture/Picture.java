@@ -1,21 +1,28 @@
 package com.leandroinacio.picmeapi.picture;
 
+import java.util.Calendar;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.leandroinacio.picmeapi.base.BaseEntity;
 import com.leandroinacio.picmeapi.user.User;
+import com.leandroinacio.picmeapi.utils.DateUtils;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Entity @Table
+@Entity @Table @AllArgsConstructor
 @Data public class Picture extends BaseEntity {
 
 	private String description;
@@ -24,20 +31,30 @@ import lombok.Data;
 	private String fileType;
 	
 	@NotEmpty
-	private Double latitude;
-	
+	private String country;
+
 	@NotEmpty
-	private Double longitude;
+	private String state;
+		
+	@NotEmpty
+	private String city;
+
+	private String reference1;
+	private String reference2;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@NotEmpty @JoinColumn
+	@ManyToOne
+	@NotEmpty @JoinColumn(unique=false, nullable=false, insertable=true)
 	private User photographer;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@NotEmpty @JoinColumn
+	@ManyToMany
+	@NotEmpty @JoinColumn(unique=false, nullable=true, insertable=true)
 	private List<User> owner;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
-	@NotEmpty @JoinColumn
+	@ManyToMany
+	@NotEmpty @JoinColumn(unique=false, nullable=true, insertable=true)
 	private List<User> faceMatch;
+	
+	@NotNull @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = DateUtils.DEFAULT_FORMAT)
+	private Calendar pictureDate;
 }

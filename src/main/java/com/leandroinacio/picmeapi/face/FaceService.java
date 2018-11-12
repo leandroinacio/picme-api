@@ -16,15 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.leandroinacio.picmeapi.base.BaseImageService;
 import com.leandroinacio.picmeapi.user.IUserRepository;
 import com.leandroinacio.picmeapi.user.User;
-import com.leandroinacio.picmeapi.utils.DateUtils;
 
 @Service
-public class FaceService implements IFaceService {
+public class FaceService extends BaseImageService implements IFaceService {
 
 	private static final Logger log = LoggerFactory.getLogger(FaceService.class);
-	private static final String UPLOAD_ROOT = "/home/leandroinacio/workspace/picme-pics";
 	
 	@Autowired
 	private IFaceRepository faceRepository;
@@ -45,15 +44,9 @@ public class FaceService implements IFaceService {
 		Face face = new Face(file.getContentType(), user);
 		//Face aa = new Face() {{ setFileType("aa"); }};
 		face = faceRepository.save(face);
-		
-		// Check if directory exists and create
-		// if (Files.)
-		
+				
 		// Copy to folder and rename it
-		Files.copy(file.getInputStream(), Paths.get(this.getFilePath(face), file.getOriginalFilename()));
-		File oldName = new File(this.getFilePath(face) + "/" + file.getOriginalFilename());
-		File newName = new File(this.getFilePath(face) + "/" + this.getFileName(face));
-		oldName.renameTo(newName);
+		this.copyToFolderAndRenameFile(file, face, this.getFileName(face));
 		
 		return face;
 	}
@@ -73,20 +66,13 @@ public class FaceService implements IFaceService {
 		.header(HttpHeaders.CONTENT_DISPOSITION, ":attachment; filename=\"" + file.getFilename() + "\"")
 		.body(file);
 	}
-		
-	/**
-	 * @param face object
-	 * @return the file path (root + create date of the image)
-	 */
-	private String getFilePath(Face face) {
-		return UPLOAD_ROOT + "/" + DateUtils.getDayMonthYear(face.getCreateDate()); 
-	}
 	
 	/**
 	 * @param face object
 	 * @return the file name (id + file type)
 	 */
-	private String getFileName(Face face) {
+	protected String getFileName(Face face) {
 		return face.getId() + "." + (face.getFileType().split("/")[face.getFileType().split("/").length - 1]);
 	}
+	
 }
