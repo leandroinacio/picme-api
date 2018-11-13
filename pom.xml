@@ -32,6 +32,13 @@
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 	    
+	    <!-- Facial Recognition -->
+	    <dependency>
+		    <groupId>org.bytedeco</groupId>
+		    <artifactId>javacv</artifactId>
+		    <version>1.4.3</version>
+		</dependency>
+
    	    <!-- Database -->
 	    <dependency>
 	      <groupId>org.springframework.boot</groupId>
