@@ -15,14 +15,16 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.leandroinacio.picmeapi.base.BaseEntity;
 import com.leandroinacio.picmeapi.user.User;
 import com.leandroinacio.picmeapi.utils.DateUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity @Table @AllArgsConstructor
+@Entity @Table @AllArgsConstructor @NoArgsConstructor
 @Data public class Picture extends BaseEntity {
 
 	private String description;
@@ -42,16 +44,16 @@ import lombok.Data;
 	private String reference1;
 	private String reference2;
 	
-	@ManyToOne
-	@NotEmpty @JoinColumn(unique=false, nullable=false, insertable=true)
+	@ManyToOne @JsonIgnore
+	@JoinColumn(unique=false, nullable=false, insertable=true)
 	private User photographer;
 
-	@ManyToMany
-	@NotEmpty @JoinColumn(unique=false, nullable=true, insertable=true)
+	@ManyToMany @JsonIgnore
+	@JoinColumn(unique=false, nullable=true, insertable=true)
 	private List<User> owner;
 	
-	@ManyToMany
-	@NotEmpty @JoinColumn(unique=false, nullable=true, insertable=true)
+	@ManyToMany @JsonIgnore
+	@JoinColumn(unique=false, nullable=true, insertable=true)
 	private List<User> faceMatch;
 	
 	@NotNull @Temporal(TemporalType.TIMESTAMP)

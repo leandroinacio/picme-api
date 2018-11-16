@@ -29,7 +29,7 @@ import lombok.Data;
 	@Transient @JsonIgnore
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	@Id	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@Id	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;		
 	
 	@NotNull @Temporal(TemporalType.TIMESTAMP)

@@ -1,10 +1,15 @@
 package com.leandroinacio.picmeapi.user;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.leandroinacio.picmeapi.base.BaseEntity;
+import com.leandroinacio.picmeapi.picture.Picture;
 
 import lombok.Data;
 
@@ -21,4 +26,8 @@ import lombok.Data;
 	private String name;
 	
 	private boolean active;
+
+	// TODO: Figure out if picture is the dominant like we described here
+	@OneToMany @JsonIgnore
+	List<Picture> picture;
 }

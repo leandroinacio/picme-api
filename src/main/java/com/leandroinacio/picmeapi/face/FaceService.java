@@ -1,6 +1,5 @@
 package com.leandroinacio.picmeapi.face;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,9 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.leandroinacio.picmeapi.base.BaseImageService;
 import com.leandroinacio.picmeapi.user.IUserRepository;
 import com.leandroinacio.picmeapi.user.User;
+import com.leandroinacio.picmeapi.utils.DateUtils;
 
 @Service
 public class FaceService extends BaseImageService implements IFaceService {
+
+	public static final String UPLOAD_ROOT = "/home/leandroinacio/workspace/picme-pics/face/";
 
 	private static final Logger log = LoggerFactory.getLogger(FaceService.class);
 	
@@ -46,7 +48,8 @@ public class FaceService extends BaseImageService implements IFaceService {
 		face = faceRepository.save(face);
 				
 		// Copy to folder and rename it
-		this.copyToFolderAndRenameFile(file, face, this.getFileName(face));
+		this.checkAndCreatePaths(this.getFilePath(face));
+		this.copyToFolderAndRenameFile(file, this.getFilePath(face), this.getFileName(face));
 		
 		return face;
 	}
@@ -58,7 +61,7 @@ public class FaceService extends BaseImageService implements IFaceService {
 	}
 	
 	public ResponseEntity<Resource> serveOneImage(Long id) {
-		Face face = faceRepository.findById(id);
+		Face face = faceRepository.findById(id); //TODO: if null return 
 		Resource file = resourceLoader.getResource("file:" + this.getFilePath(face) + "/" + this.getFileName(face));
 		
 		return ResponseEntity.ok()
@@ -73,6 +76,15 @@ public class FaceService extends BaseImageService implements IFaceService {
 	 */
 	protected String getFileName(Face face) {
 		return face.getId() + "." + (face.getFileType().split("/")[face.getFileType().split("/").length - 1]);
+	}
+
+	/**
+	 * TODO: Check if folder should be based on create date for picture classes
+	 * @param face object
+	 * @return the file path (root + create date of the image)
+	 */
+	public String getFilePath(Face face) {
+		return UPLOAD_ROOT + face.getUser().getId() + "/" + DateUtils.getDayMonthYear(face.getCreateDate()) + "/"; 
 	}
 	
 }
