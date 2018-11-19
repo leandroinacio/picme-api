@@ -1,9 +1,25 @@
 package com.leandroinacio.picmeapi.face;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core.MatVector;
+import org.bytedeco.javacpp.opencv_core.Size;
+import org.bytedeco.javacpp.opencv_face.EigenFaceRecognizer;
+import org.bytedeco.javacpp.opencv_face.FaceRecognizer;
+import org.bytedeco.javacpp.opencv_face.FisherFaceRecognizer;
+import org.bytedeco.javacpp.opencv_face.LBPHFaceRecognizer;
+import org.bytedeco.javacpp.opencv_imgcodecs;
+import org.bytedeco.javacpp.opencv_imgproc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +35,7 @@ import com.leandroinacio.picmeapi.base.BaseImageService;
 import com.leandroinacio.picmeapi.user.IUserRepository;
 import com.leandroinacio.picmeapi.user.User;
 import com.leandroinacio.picmeapi.utils.DateUtils;
+import com.leandroinacio.picmeapi.utils.FileUtils;
 
 @Service
 public class FaceService extends BaseImageService implements IFaceService {
@@ -85,6 +102,50 @@ public class FaceService extends BaseImageService implements IFaceService {
 	 */
 	public String getFilePath(Face face) {
 		return UPLOAD_ROOT + face.getUser().getId() + "/" + DateUtils.getDayMonthYear(face.getCreateDate()) + "/"; 
+	}
+
+	public void train(Long userId, Calendar date) {
+		
+		// Get folder requested or all of them if passed null
+		List<Calendar> dateList = Arrays.asList(date);
+		if (date == null) {
+			dateList = faceRepository.findCreateDateById(userId);
+		}
+		
+		// Analyze each folder
+		for (Calendar currentDate : dateList) {
+			
+			// Get folder and files
+			File folder = new File(UPLOAD_ROOT + userId + "/" + DateUtils.getDayMonthYear(currentDate) + "/");
+			FilenameFilter nameFilter = FileUtils.getDefaultFilenameFilter();
+			File[] files = folder.listFiles(nameFilter);
+			
+			// Setup info on analyzer
+			MatVector faces = new MatVector(files.length);
+			Mat labels = new Mat(files.length, 1, opencv_core.CV_32SC1);
+			IntBuffer labelBuffer = labels.createBuffer();
+			
+			// Iterate images and prepare for analyze
+			for (Integer pos = 0; pos < files.length; pos++) {
+				File file = files[pos];
+				Mat facePicture = opencv_imgcodecs.imread(file.getAbsolutePath(), opencv_imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+				opencv_imgproc.resize(facePicture, facePicture, new Size(160, 160));
+				faces.put(pos, facePicture);
+				labelBuffer.put(pos);
+			}
+
+			// Train facial recognition and save files
+			String folderName = folder.getAbsolutePath() + "/" + userId;
+	        FaceRecognizer eigenfaces = EigenFaceRecognizer.create();
+	        FaceRecognizer fisherfaces = FisherFaceRecognizer.create();
+	        FaceRecognizer lbph = LBPHFaceRecognizer.create();
+	        eigenfaces.train(faces, labels);
+	        eigenfaces.save(folderName + "_eigen.yml");
+	        fisherfaces.train(faces, labels);
+	        fisherfaces.save(folderName + "_fisher.yml");
+	        lbph.train(faces, labels);
+	        lbph.save(folderName + "_lbph.yml");
+		}
 	}
 	
 }

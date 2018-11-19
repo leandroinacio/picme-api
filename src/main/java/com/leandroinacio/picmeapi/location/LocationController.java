@@ -1,4 +1,6 @@
-package com.leandroinacio.picmeapi.user;
+package com.leandroinacio.picmeapi.location;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,18 +16,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/location")
+public class LocationController {
 
-	private static final Logger log = LoggerFactory.getLogger(UserController.class);
+	private static final Logger log = LoggerFactory.getLogger(LocationController.class);
 	
 	@Autowired
-	private IUserService userService;
+	private ILocationService locationService;
 	
 	@PutMapping("/save")
-	public HttpStatus save(@RequestBody User user) {
+	public HttpStatus save(@RequestBody List<Location> locations) {
 		try {
-			userService.save(user);
+			locationService.save(locations);
 			return HttpStatus.OK;
 		} catch(Exception e) {
 			log.error(e.getMessage());
@@ -34,29 +36,9 @@ public class UserController {
 	}
 	
 	@GetMapping("/findById/{id}")
-	public @ResponseBody User findById(@PathVariable("id") Long id) {
+	public @ResponseBody Location findById(@PathVariable("id") Long id) {
 		try {
-			return userService.findById(id);
-		}catch(Exception e) {
-			log.error(e.getMessage());
-			return null;
-		}
-	}
-	
-	@GetMapping("/findByEmail/{email}")
-	public @ResponseBody User findByEmail(@PathVariable("email") String email) {
-		try {
-			return userService.findByEmail(email);
-		}catch(Exception e) {
-			log.error(e.getMessage());
-			return null;
-		}
-	}
-	
-	@GetMapping("/findByName/{name}")
-	public @ResponseBody User findByName(@PathVariable("name") String name) {
-		try {
-			return userService.findByName(name);
+			return locationService.findById(id);
 		}catch(Exception e) {
 			log.error(e.getMessage());
 			return null;
@@ -66,7 +48,7 @@ public class UserController {
 	@DeleteMapping("/delete/{id}")
 	public HttpStatus delete(@PathVariable("id") Long id) {
 		try {
-			userService.deleteById(id);
+			locationService.deleteById(id);
 			return HttpStatus.OK;
 		}catch(Exception e) {
 			log.error(e.getMessage());

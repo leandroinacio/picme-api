@@ -35,7 +35,7 @@
 	    <!-- Facial Recognition -->
 	    <dependency>
 		    <groupId>org.bytedeco</groupId>
-		    <artifactId>javacv</artifactId>
+		    <artifactId>javacv-platform</artifactId>
 		    <version>1.4.3</version>
 		</dependency>
 

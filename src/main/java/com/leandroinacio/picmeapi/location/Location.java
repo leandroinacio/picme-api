@@ -4,11 +4,13 @@ import java.util.Calendar;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.leandroinacio.picmeapi.base.BaseEntity;
+import com.leandroinacio.picmeapi.picture.Picture;
 import com.leandroinacio.picmeapi.user.User;
 
 import lombok.Data;
@@ -17,11 +19,18 @@ import lombok.Data;
 @Data public class Location extends BaseEntity {
 
 	@NotEmpty
-	private Calendar locationDate;
+	private Calendar locationStartDate;
 	
-	@ManyToOne
-	@JoinColumn(unique=false, nullable=false, insertable=true)
+	@NotEmpty
+	private Calendar locationEndDate;
+
+	@OneToOne @JsonIgnore
+	@JoinColumn(unique=false, nullable=true, insertable=true)
 	private User user;
+
+	@OneToOne @JsonIgnore
+	@JoinColumn(unique=false, nullable=true, insertable=true)
+	private Picture picture;
 	
 	@NotEmpty
 	private String country;
@@ -34,4 +43,5 @@ import lombok.Data;
 	
 	private String reference1;
 	private String reference2;
+	
 }
