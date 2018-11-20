@@ -104,19 +104,19 @@ public class FaceService extends BaseImageService implements IFaceService {
 		return UPLOAD_ROOT + face.getUser().getId() + "/" + DateUtils.getDayMonthYear(face.getCreateDate()) + "/"; 
 	}
 
-	public void train(Long userId, Calendar date) {
+	public void train(Long userId, String date) {
 		
 		// Get folder requested or all of them if passed null
-		List<Calendar> dateList = Arrays.asList(date);
-		if (date == null) {
-			dateList = faceRepository.findCreateDateById(userId);
-		}
+		List<String> dateList = Arrays.asList(date);
+//		if (date == null) {
+//			dateList = faceRepository.findCreateDateById(userId);
+//		}
 		
 		// Analyze each folder
-		for (Calendar currentDate : dateList) {
+		for (String currentDate : dateList) {
 			
 			// Get folder and files
-			File folder = new File(UPLOAD_ROOT + userId + "/" + DateUtils.getDayMonthYear(currentDate) + "/");
+			File folder = new File(UPLOAD_ROOT + userId + "/" + currentDate + "/");
 			FilenameFilter nameFilter = FileUtils.getDefaultFilenameFilter();
 			File[] files = folder.listFiles(nameFilter);
 			
@@ -128,9 +128,11 @@ public class FaceService extends BaseImageService implements IFaceService {
 			// Iterate images and prepare for analyze
 			for (Integer pos = 0; pos < files.length; pos++) {
 				File file = files[pos];
-				Mat facePicture = opencv_imgcodecs.imread(file.getAbsolutePath(), opencv_imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
-				opencv_imgproc.resize(facePicture, facePicture, new Size(160, 160));
-				faces.put(pos, facePicture);
+				
+				// Get just the face
+				Mat faceToAnalyze = FileUtils.detectFace(file);
+				
+				faces.put(pos, faceToAnalyze);
 				labelBuffer.put(pos);
 			}
 

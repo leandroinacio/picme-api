@@ -49,7 +49,7 @@ public class FaceController extends BaseController {
 	@PostMapping("/train")
 	public HttpStatus train(Long userId, String date) {
 		// TODO: Think about string to date conversion here, of just keep it string should also work
-		faceService.train(userId, Calendar.getInstance());
+		faceService.train(userId, date);
 		return HttpStatus.OK;
 	}
 }

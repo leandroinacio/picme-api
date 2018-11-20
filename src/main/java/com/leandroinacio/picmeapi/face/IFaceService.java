@@ -11,5 +11,5 @@ public interface IFaceService {
 	public Face upload(MultipartFile file) throws IOException;
 	public void deleteImage(Long id) throws IOException;
 	public ResponseEntity<Resource> serveOneImage(Long id);
-	public void train(Long userId, Calendar date);
+	public void train(Long userId, String date);
 }

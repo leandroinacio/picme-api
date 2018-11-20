@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.leandroinacio.picmeapi.location.Location;
 import com.leandroinacio.picmeapi.user.User;
 
 public interface IPictureService {
@@ -16,4 +17,5 @@ public interface IPictureService {
 	public ResponseEntity<Resource> serveOneImage(Long id);
 	public ResponseEntity<Resource> serveOneDemoImage(Long id);
 	public List<Picture> findByPhotographer(User photographer);
+	public List<Picture> searchPicturesAndAnalyze(User user, List<Location> locations);
 }

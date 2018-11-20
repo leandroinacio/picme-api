@@ -43,7 +43,7 @@ public class PictureController extends BaseController {
 			if (picture == null) { 
 				User user = new User();
 				user.setId((long)1);
-				picture = new Picture("teste teste", "image/jpeg", "br", "mg", "Uberaba", null, null, user, null, null, Calendar.getInstance());
+				picture = new Picture("teste teste", "image/jpeg", "br", "mg", "Uberaba", null, null, user, null, null, Calendar.getInstance(), null);
 			}
 			pictureService.upload(picture, file);
 			return HttpStatus.OK;
@@ -86,7 +86,7 @@ public class PictureController extends BaseController {
 	}
 	
 	@PostMapping("/searchPictures")
-	public @ResponseBody List<Picture> searchPictures(User user, Location[] locations) {
+	public @ResponseBody List<Picture> searchPictures(User user, List<Location> locations) {
 //		pictureService.
 		return null;
 		

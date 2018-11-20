@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.leandroinacio.picmeapi.base.BaseImageService;
+import com.leandroinacio.picmeapi.location.Location;
 import com.leandroinacio.picmeapi.user.IUserRepository;
 import com.leandroinacio.picmeapi.user.User;
 import com.leandroinacio.picmeapi.utils.DateUtils;
@@ -129,6 +130,16 @@ public class PictureService extends BaseImageService implements IPictureService 
 	 */
 	public String getFileName(Picture picture) {
 		return picture.getId() + "." + (picture.getFileType().split("/")[picture.getFileType().split("/").length - 1]);
+	}
+
+	public List<Picture> searchPicturesAndAnalyze(User user, List<Location> locations) {
+		
+		// Find pictures that match locations
+//		List<Picture> pictures = pictureRepository.find
+		
+		//
+		
+		return null;
 	}
 	
 }

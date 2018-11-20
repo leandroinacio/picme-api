@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -17,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.leandroinacio.picmeapi.base.BaseEntity;
+import com.leandroinacio.picmeapi.location.Location;
 import com.leandroinacio.picmeapi.user.User;
 import com.leandroinacio.picmeapi.utils.DateUtils;
 
@@ -56,7 +58,11 @@ import lombok.NoArgsConstructor;
 	@JoinColumn(unique=false, nullable=true, insertable=true)
 	private List<User> faceMatch;
 	
+	// TODO: Talvez eu nao precise deste campo
 	@NotNull @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = DateUtils.DEFAULT_FORMAT)
 	private Calendar pictureDate;
+	
+	@OneToOne @JsonIgnore
+	private Location location;
 }
