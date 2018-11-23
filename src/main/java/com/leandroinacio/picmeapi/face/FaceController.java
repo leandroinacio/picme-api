@@ -1,11 +1,11 @@
 package com.leandroinacio.picmeapi.face;
 
 import java.io.IOException;
-import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,39 +17,59 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.leandroinacio.picmeapi.base.BaseController;
+import com.leandroinacio.picmeapi.base.BaseResponse;
 import com.leandroinacio.picmeapi.user.User;
+import com.leandroinacio.picmeapi.utils.FileUtils;
 
 @RestController
 @RequestMapping("/face")
 public class FaceController extends BaseController {
-	
+		
 	@Autowired
 	private IFaceService faceService;
 	
 	// TODO: Figure out this validation
 	//consumes = {MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}
 	@PostMapping(value="/upload")
-	public HttpStatus upload(@RequestParam("file") MultipartFile file) throws IOException {
-		if (file.isEmpty()) { return HttpStatus.PRECONDITION_FAILED; }
-		faceService.upload(file);
-		return HttpStatus.OK;
+	public BaseResponse upload(@RequestParam("file") MultipartFile file) throws IOException {
+		return new BaseResponse(faceService.upload(file));
 	}
 		
-	@GetMapping("/serveImage/{id}")
-	public ResponseEntity<Resource> serveImage(@PathVariable("id") Long id) {
-		return faceService.serveOneImage(id);
+	@GetMapping("findAll/{page}/{size}")
+	public BaseResponse findAll(@PathVariable("page")Integer page, @PathVariable("size")Integer size) {
+		return new BaseResponse(faceService.findAll(page, size));
+	}
+	
+	@GetMapping("findByUser/{page}/{size}/{userId}")
+	public BaseResponse findAll(@PathVariable("page")Integer page, 
+			@PathVariable("size")Integer size, @PathVariable("userId")Long userId) {
+		
+		// TODO: Get user from security
+		User user = new User() {{ setId(userId); }};
+		return new BaseResponse(faceService.findByUser(user, page, size));
+	}
+	
+	@GetMapping("/serveOneImageById/{id}")
+	public ResponseEntity<Resource> serveOneImageById(@PathVariable("id") Long id) {
+		Face face = faceService.serveOneImageById(id);
+		return ResponseEntity.ok()
+		.contentType(MediaType.parseMediaType(face.getFileType()))
+		.header(HttpHeaders.CONTENT_DISPOSITION, ":attachment; filename=\"" 
+				+ FileUtils.getFileName(face.getId(), face.getFileType()) + "\"")
+		.body(face.getFile());
 	}
 	
 	@DeleteMapping("/deleteById/{id}")
-	public HttpStatus delete(@PathVariable("id") Long id) throws IOException {
-			faceService.deleteImage(id);
-			return HttpStatus.OK;
+	public BaseResponse delete(@PathVariable("id") Long id) throws IOException {
+		faceService.deleteImage(id);
+		return new BaseResponse();
 	}
 	
+	// TODO: Validate if user has more than 2 files
+	// TODO: Figure out how to reset base response
 	@PostMapping("/train")
-	public HttpStatus train(Long userId, String date) {
-		// TODO: Think about string to date conversion here, of just keep it string should also work
-		faceService.train(userId, date);
-		return HttpStatus.OK;
+	public BaseResponse train(Long userId) {
+		faceService.train(userId);
+		return new BaseResponse();
 	}
 }

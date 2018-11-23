@@ -11,9 +11,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -65,4 +67,7 @@ import lombok.NoArgsConstructor;
 	
 	@OneToOne @JsonIgnore
 	private Location location;
+	
+	@Transient @JsonIgnore
+	private Resource file;
 }

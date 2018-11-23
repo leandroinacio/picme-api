@@ -12,4 +12,16 @@ public class DateUtils {
 		final DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
 		return df.format(calendar.getTime());
 	}
+
+	public static Integer getDayOfMonth(Calendar calendar) {
+		return calendar.get(Calendar.DAY_OF_MONTH);
+	}
+	
+	public static Integer getMonth(Calendar calendar) {
+		return calendar.get(Calendar.MONTH);
+	}
+
+	public static Integer getYear(Calendar calendar) {
+		return calendar.get(Calendar.YEAR);
+	}
 }

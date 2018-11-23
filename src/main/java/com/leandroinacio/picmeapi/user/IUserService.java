@@ -1,8 +1,11 @@
 package com.leandroinacio.picmeapi.user;
 
+import org.springframework.data.domain.Page;
+
 public interface IUserService {
 
 	public void save(User user);
+	public Page<User> findAll(Integer page, Integer size);
 	public User findByName(String name);
 	public User findByEmail(String email);
 	public User findById(Long id);

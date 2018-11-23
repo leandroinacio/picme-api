@@ -27,7 +27,6 @@ import lombok.Data;
 	
 	private boolean active;
 
-	// TODO: Figure out if picture is the dominant like we described here
 	@OneToMany @JsonIgnore
 	List<Picture> picture;
 }
