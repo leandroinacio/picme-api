@@ -23,9 +23,12 @@ import com.leandroinacio.picmeapi.utils.DateUtils;
 
 import lombok.Data;
 
-@MappedSuperclass
-@Data public class BaseEntity implements Serializable {
+@MappedSuperclass @Data 
+public class BaseEntity implements Serializable {
 
+	@Transient @JsonIgnore
+	private static final long serialVersionUID = 1L;
+	
 	@Transient @JsonIgnore
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	

@@ -9,7 +9,7 @@ public class DateUtils {
 	public final static String DEFAULT_FORMAT = "dd.MM.yyyy HH:mm:ss";
 	
 	public static String getDayMonthYear(Calendar calendar) {
-		final DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+		final DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 		return df.format(calendar.getTime());
 	}
 

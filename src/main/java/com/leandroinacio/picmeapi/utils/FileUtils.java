@@ -16,9 +16,6 @@ import org.bytedeco.javacpp.opencv_imgproc;
 import org.bytedeco.javacpp.opencv_objdetect.CascadeClassifier;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.leandroinacio.picmeapi.base.BaseEntity;
-import com.leandroinacio.picmeapi.face.Face;
 import com.leandroinacio.picmeapi.picture.Picture;
 import com.leandroinacio.picmeapi.user.User;
 
@@ -98,17 +95,10 @@ public class FileUtils {
 				+ DateUtils.getDayOfMonth(user.getCreateDate()) + "/" + user.getId() + "/"; 
 	}
 
-	public static String getPhotographerPicturePath(Picture picture) {
-		return ROOT_FOLDER + "picture/photographer/"
+	public static String getPicturePath(Picture picture) {
+		return ROOT_FOLDER + "picture/"
 				+ DateUtils.getYear(picture.getCreateDate()) + "/" + DateUtils.getMonth(picture.getCreateDate())
 				+ "/" + DateUtils.getDayOfMonth(picture.getCreateDate()) + "/" 
-				+ picture.getPhotographer().getId() + "/"; 
-	}
-
-	public static String getOwnerPicturePath(Picture picture) {
-		return ROOT_FOLDER + "picture/owner/" + DateUtils.getYear(picture.getCreateDate()) 
-				+ "/" + DateUtils.getMonth(picture.getCreateDate()) + "/" 
-				+ DateUtils.getDayOfMonth(picture.getCreateDate()) + "/" 
 				+ picture.getPhotographer().getId() + "/"; 
 	}
 	

@@ -21,8 +21,7 @@ import com.leandroinacio.picmeapi.base.BaseResponse;
 import com.leandroinacio.picmeapi.user.User;
 import com.leandroinacio.picmeapi.utils.FileUtils;
 
-@RestController
-@RequestMapping("/face")
+@RestController @RequestMapping("/face")
 public class FaceController extends BaseController {
 		
 	@Autowired
@@ -31,18 +30,18 @@ public class FaceController extends BaseController {
 	// TODO: Figure out this validation
 	//consumes = {MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}
 	@PostMapping(value="/upload")
-	public BaseResponse upload(@RequestParam("file") MultipartFile file) throws IOException {
+	public BaseResponse upload(@RequestParam MultipartFile file) throws IOException {
 		return new BaseResponse(faceService.upload(file));
 	}
 		
 	@GetMapping("findAll/{page}/{size}")
-	public BaseResponse findAll(@PathVariable("page")Integer page, @PathVariable("size")Integer size) {
+	public BaseResponse findAll(@PathVariable Integer page, @PathVariable Integer size) {
 		return new BaseResponse(faceService.findAll(page, size));
 	}
 	
 	@GetMapping("findByUser/{page}/{size}/{userId}")
-	public BaseResponse findAll(@PathVariable("page")Integer page, 
-			@PathVariable("size")Integer size, @PathVariable("userId")Long userId) {
+	public BaseResponse findAll(@PathVariable Integer page, 
+			@PathVariable Integer size, @PathVariable Long userId) {
 		
 		// TODO: Get user from security
 		User user = new User() {{ setId(userId); }};
@@ -50,7 +49,7 @@ public class FaceController extends BaseController {
 	}
 	
 	@GetMapping("/serveOneImageById/{id}")
-	public ResponseEntity<Resource> serveOneImageById(@PathVariable("id") Long id) {
+	public ResponseEntity<Resource> serveOneImageById(@PathVariable Long id) {
 		Face face = faceService.serveOneImageById(id);
 		return ResponseEntity.ok()
 		.contentType(MediaType.parseMediaType(face.getFileType()))
@@ -60,7 +59,7 @@ public class FaceController extends BaseController {
 	}
 	
 	@DeleteMapping("/deleteById/{id}")
-	public BaseResponse delete(@PathVariable("id") Long id) throws IOException {
+	public BaseResponse delete(@PathVariable Long id) throws IOException {
 		faceService.deleteImage(id);
 		return new BaseResponse();
 	}
@@ -68,7 +67,7 @@ public class FaceController extends BaseController {
 	// TODO: Validate if user has more than 2 files
 	// TODO: Figure out how to reset base response
 	@PostMapping("/train")
-	public BaseResponse train(Long userId) {
+	public BaseResponse train(@RequestParam Long userId) {
 		faceService.train(userId);
 		return new BaseResponse();
 	}

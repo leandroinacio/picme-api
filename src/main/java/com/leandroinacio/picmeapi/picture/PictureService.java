@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Calendar;
 import java.util.List;
 
 import org.bytedeco.javacpp.DoublePointer;
@@ -13,13 +12,9 @@ import org.bytedeco.javacpp.opencv_core.Mat;
 import org.bytedeco.javacpp.opencv_face.EigenFaceRecognizer;
 import org.bytedeco.javacpp.opencv_face.FaceRecognizer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,14 +43,11 @@ public class PictureService implements IPictureService {
 		// TODO: Double check picture values (photographer)
 		// Setup missing values from picture and save to the db
 		picture.setPhotographer(photographer);
-		if (picture.getPictureDate() == null) {
-			picture.setPictureDate(Calendar.getInstance());
-		}
 		picture.setFileType(file.getContentType());		
 		picture = this.pictureRepository.save(picture);
 		
 		// Copy to folder and rename it
-		FileUtils.copyToFolderAndRenameFile(file, FileUtils.getPhotographerPicturePath(picture), 
+		FileUtils.copyToFolderAndRenameFile(file, FileUtils.getPicturePath(picture), 
 				FileUtils.getFileName(picture.getId(), picture.getFileType()));
 		
 		// TODO: Create demo picture and folder.
@@ -71,9 +63,9 @@ public class PictureService implements IPictureService {
 		
 		// Move file to new owner folder
 		Files.copy(
-				Paths.get(FileUtils.getPhotographerPicturePath(picture), 
+				Paths.get(FileUtils.getPicturePath(picture), 
 						FileUtils.getFileName(picture.getId(), picture.getFileType())), 
-				Paths.get(FileUtils.getOwnerPicturePath(picture), 
+				Paths.get(FileUtils.getPicturePath(picture), 
 						FileUtils.getFileName(picture.getId(), picture.getFileType()))
 			);
 	}
@@ -84,9 +76,9 @@ public class PictureService implements IPictureService {
 		// User user = this.pictureRepository.findByIdAndUser(picture.getId(), user);
 		this.pictureRepository.deleteById(picture.getId());
 		
-		// TODO: Figure out best way to handle if picture is from owner or from photographer
-		Files.deleteIfExists(Paths.get(FileUtils.getOwnerPicturePath(picture), 
-				FileUtils.getFileName(picture.getId(), picture.getFileType())));
+		// TODO: Delete from folder only if there are 0 owners and photographers
+//		Files.deleteIfExists(Paths.get(FileUtils.getPicturePath(picture), 
+//				FileUtils.getFileName(picture.getId(), picture.getFileType())));
 		// Files.deleteIfExists(Paths.get(this.getDemoFilePath(picture), this.getFileName(picture)));
 	}
 	
@@ -94,7 +86,7 @@ public class PictureService implements IPictureService {
 		Picture picture = this.pictureRepository.findById(id);
 		
 		// TODO: Figure out security to handle photographer vs owner folder
-		String filePath = FileUtils.getPhotographerPicturePath(picture) 
+		String filePath = FileUtils.getPicturePath(picture) 
 				+ FileUtils.getFileName(picture.getId(), picture.getFileType());
 		picture.setFile(resourceLoader.getResource("file:" + filePath));
 		return picture;
@@ -116,7 +108,7 @@ public class PictureService implements IPictureService {
 		
 		// Setup file
 		// TODO: Need to handle all files retrieved
-		File file = new File(FileUtils.getOwnerPicturePath(pictures.get(0)) 
+		File file = new File(FileUtils.getPicturePath(pictures.get(0)) 
 				+ FileUtils.getFileName(pictures.get(0).getId(), pictures.get(0).getFileType()));
 		
 		// Get faces on picture
@@ -124,17 +116,20 @@ public class PictureService implements IPictureService {
 		
 		// Check for faces
 		IntPointer label = new IntPointer(1);
-		DoublePointer confidence = new DoublePointer(2);
+		DoublePointer confidence = new DoublePointer(1);
 		FaceRecognizer eigenRecognizer = EigenFaceRecognizer.create();
 		
 		// Get faces recognition for user				
-		//TODO: Work on logic here, add other face recognition methods
+		//TODO: Work on logic here, add other face recognition methods and get user from security instead of fetch
+		user = userRepository.findById(user.getId());
 		eigenRecognizer.read(FileUtils.getFaceYmlByUser(user, "eigen"));
 		
 		for (Mat currentFace : facesToIdentify) {
 			eigenRecognizer.predict(currentFace, label, confidence);			
 		}
-		
+
+		System.out.println(confidence.get(0));
+		System.out.println(label.get(0));
 		return null;
 	}
 	

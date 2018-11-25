@@ -1,7 +1,5 @@
 package com.leandroinacio.picmeapi.location;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.leandroinacio.picmeapi.base.BaseResponse;
 import com.leandroinacio.picmeapi.user.User;
 
-@RestController
-@RequestMapping("/location")
+@RestController @RequestMapping("/location")
 public class LocationController {
 
 	private static final Logger log = LoggerFactory.getLogger(LocationController.class);
@@ -26,24 +23,24 @@ public class LocationController {
 	private ILocationService locationService;
 	
 	@PutMapping("/save")
-	public BaseResponse save(@RequestBody List<Location> locations) {
-		this.locationService.save(locations);
+	public BaseResponse save(@RequestBody Location location) {
+		this.locationService.save(location);
 		return new BaseResponse();
 	}
 	
 	@GetMapping("/findById/{id}")
-	public BaseResponse findById(@PathVariable("id") Long id) {
+	public BaseResponse findById(@PathVariable Long id) {
 		return new BaseResponse(this.locationService.findById(id));
 	}
 	
 	@GetMapping("/findAll/{page}/{size}")
-	public BaseResponse findById(@PathVariable("page") Integer page, @PathVariable("size") Integer size) {
+	public BaseResponse findById(@PathVariable Integer page, @PathVariable Integer size) {
 		return new BaseResponse(this.locationService.findAll(page, size));
 	}
 	
 	@GetMapping("/findByUser/{id}/{page}/{size}")
-	public BaseResponse findByUser(@PathVariable("id") Long id, 
-			@PathVariable("page") Integer page, @PathVariable("size") Integer size) {
+	public BaseResponse findByUser(@PathVariable Long id, 
+			@PathVariable Integer page, @PathVariable Integer size) {
 		
 		// TODO: Apply security rules here
 		User user = new User() {{ setId(id); }};
@@ -51,7 +48,7 @@ public class LocationController {
 	}
 	
 	@DeleteMapping("/delete/{id}")
-	public BaseResponse delete(@PathVariable("id") Long id) {
+	public BaseResponse delete(@PathVariable Long id) {
 		this.locationService.deleteById(id);
 		return new BaseResponse();
 	}

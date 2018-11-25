@@ -87,7 +87,7 @@ public class FaceService implements IFaceService {
 			
 		// Setup user to fetch and face to get folder
 		User user = new User() {{ setId(userId); }};
-		Face face = this.faceRespository.findByUser(user, PageRequest.of(0, 1)).getContent().get(0);
+		Face face = this.faceRespository.findByUser(user, PageRequest.of(0, 50)).getContent().get(0);
 		
 		// Setup folder and get files
 		File folder = new File(FileUtils.getUserFacePath(face.getUser()));

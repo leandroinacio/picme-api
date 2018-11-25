@@ -13,7 +13,6 @@ public interface IFaceService {
 	public Page<Face> findAll(Integer page, Integer size);
 	public Page<Face> findByUser(User user, Integer page, Integer size);
 	public Face serveOneImageById(Long id);
-//	public ResponseEntity<Resource> serveOneImage(Long id);
 	public void deleteImage(Long id) throws IOException;
 	public void train(Long userId);
 	

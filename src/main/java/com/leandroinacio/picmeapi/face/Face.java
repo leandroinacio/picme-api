@@ -17,9 +17,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity @Table @AllArgsConstructor @NoArgsConstructor
-@Data public class Face extends BaseEntity {
+@Entity @Table @AllArgsConstructor @NoArgsConstructor @Data 
+public class Face extends BaseEntity {
 	
+	@Transient @JsonIgnore
+	private static final long serialVersionUID = 1L;
+
 	@NotEmpty
 	private String fileType;
 	

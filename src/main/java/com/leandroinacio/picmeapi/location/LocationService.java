@@ -1,7 +1,5 @@
 package com.leandroinacio.picmeapi.location;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +17,9 @@ public class LocationService implements ILocationService {
 	@Autowired
 	private ILocationRepository locationRepository;
 
-	public void save(List<Location> locations) {
-		if (locations != null && locations.size() > 0) {
-			this.locationRepository.save(locations);
+	public void save(Location location) {
+		if (location != null) {
+			this.locationRepository.save(location);
 		}
 	}
 
