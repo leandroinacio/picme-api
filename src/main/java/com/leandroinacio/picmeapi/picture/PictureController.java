@@ -101,14 +101,14 @@ public class PictureController extends BaseController {
 	
 	@PostMapping("/searchPictures")
 //	@RequestParam List<Location> locations
-	public BaseController searchPictures(@RequestBody List<Location> locations) {
+	public BaseResponse searchPictures(@RequestBody List<Location> locations) {
 		
 		// TODO: Change this. We need the user from security.
 		// The user id hardcoded here just for test sake.
 		User user = new User() {{ setId(1L); }};
 		
-		this.pictureService.searchPicturesAndAnalyze(user, locations);
-		return new BaseController();
+		BaseResponse baseResponse = new BaseResponse(this.pictureService.searchPicturesAndAnalyze(user, locations));
+		return baseResponse;
 		
 	}
 }

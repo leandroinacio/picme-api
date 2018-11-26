@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.Mat;
 import org.bytedeco.javacpp.opencv_core.MatVector;
+import org.bytedeco.javacpp.opencv_core.Size;
 import org.bytedeco.javacpp.opencv_face.EigenFaceRecognizer;
 import org.bytedeco.javacpp.opencv_face.FaceRecognizer;
 import org.bytedeco.javacpp.opencv_face.FisherFaceRecognizer;
@@ -92,21 +93,29 @@ public class FaceService implements IFaceService {
 		// Setup folder and get files
 		File folder = new File(FileUtils.getUserFacePath(face.getUser()));
 		FilenameFilter nameFilter = FileUtils.getDefaultFilenameFilter();
+		
+		// TODO: change this to get each file returned by the findByUser method.
 		File[] files = folder.listFiles(nameFilter);
 			
 		// Setup info on javacv analyzer
 		MatVector faces = new MatVector(files.length);
+		
+		// TODO: The size here could return java.nio.BufferOverflowException if there are more than one face in the picture?
 		Mat labels = new Mat(files.length, 1, opencv_core.CV_32SC1);
 		IntBuffer labelBuffer = labels.createBuffer();
 		
 		// Iterate images and prepare for analyze
 		for (Integer pos = 0; pos < files.length; pos++) {
+						
 			File file = files[pos];
 			
-			// Get just the face
+			// Get just the face - Should have only one since it's training
 			Mat faceToAnalyze = FileUtils.detectFace(file).get(0);
 			
+			// Add faces found and user id to label
 			faces.put(pos, faceToAnalyze);
+			
+			// TODO: Think about better solution
 			labelBuffer.put(pos);
 		}
 
