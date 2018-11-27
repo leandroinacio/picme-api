@@ -1,6 +1,7 @@
 package com.leandroinacio.picmeapi.utils;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,8 +112,8 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
-    public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
-        return !isCreatedBeforeLastPasswordReset(getCreatedDateFromToken(token), lastPasswordReset) && !isTokenExpired(token);
+    public Boolean canTokenBeRefreshed(String token, Calendar lastPasswordReset) {
+        return !isCreatedBeforeLastPasswordReset(getCreatedDateFromToken(token), lastPasswordReset.getTime()) && !isTokenExpired(token);
     }
 
     public String refreshToken(String token) {
