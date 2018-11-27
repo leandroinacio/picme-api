@@ -43,9 +43,9 @@ public class UserController extends BaseController {
 		return new BaseResponse(this.userService.findByEmail(email));
 	}
 	
-	@GetMapping("/findByName/{name}")
-	public BaseResponse findByName(@PathVariable String name) {
-		return new BaseResponse(this.userService.findByName(name));
+	@GetMapping("/findByFirstName/{firstName}")
+	public BaseResponse findByName(@PathVariable String firstName) {
+		return new BaseResponse(this.userService.findByFirstName(firstName));
 	}
 	
 	@DeleteMapping("/delete/{id}")

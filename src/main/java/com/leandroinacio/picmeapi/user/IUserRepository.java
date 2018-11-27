@@ -17,9 +17,8 @@ public interface IUserRepository extends Repository<User, Long>{
 	@Transactional(readOnly=true)
 	public User findById(@Param("id") Long id);
 	
-	@Query("SELECT user FROM User user WHERE user.name =:name")
 	@Transactional(readOnly=true)
-	public User findByName(@Param("name") String name);
+	public User findByFirstName(String firstName);
 	
 	@Query("SELECT user FROM User user WHERE user.email =:email")
 	@Transactional(readOnly=true)

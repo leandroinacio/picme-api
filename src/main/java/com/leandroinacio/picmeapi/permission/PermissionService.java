@@ -1,4 +1,4 @@
-package com.leandroinacio.picmeapi.role;
+package com.leandroinacio.picmeapi.permission;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,22 +8,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoleService implements IRoleService {
+public class PermissionService implements IPermissionService {
 
-	private static final Logger log = LoggerFactory.getLogger(RoleService.class);
+	private static final Logger log = LoggerFactory.getLogger(PermissionService.class);
 	
 	@Autowired
-	public IRoleRepository roleRepository;
+	public IPermissionRepository roleRepository;
 	
-	public Role save(Role role) {
+	public Permission save(Permission role) {
 		return this.roleRepository.save(role);
 	}
 
-	public Role findById(Long id) {
+	public Permission findById(Long id) {
 		return this.roleRepository.findById(id);
 	}
 
-	public Page<Role> findAll(Integer page, Integer size) {
+	public Page<Permission> findAll(Integer page, Integer size) {
 		return this.roleRepository.findAll(PageRequest.of(page, size));
 	}
 

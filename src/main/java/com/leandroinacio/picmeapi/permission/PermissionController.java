@@ -1,4 +1,4 @@
-package com.leandroinacio.picmeapi.role;
+package com.leandroinacio.picmeapi.permission;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +15,15 @@ import com.leandroinacio.picmeapi.base.BaseController;
 import com.leandroinacio.picmeapi.base.BaseResponse;
 
 @RestController @RequestMapping("/role")
-public class RoleController extends BaseController {
+public class PermissionController extends BaseController {
 
-	private static final Logger log = LoggerFactory.getLogger(RoleController.class);
+	private static final Logger log = LoggerFactory.getLogger(PermissionController.class);
 	
 	@Autowired
-	private IRoleService roleService;
+	private IPermissionService roleService;
 	
 	@PutMapping("/save")
-	public BaseResponse save(@RequestBody Role role) {
+	public BaseResponse save(@RequestBody Permission role) {
 		return new BaseResponse(this.roleService.save(role));
 	}
 

@@ -31,8 +31,8 @@ public class UserService implements IUserService {
 		return userRepository.findByEmail(email);
 	}
 	
-	public User findByName(String name) {
-		return userRepository.findByName(name);
+	public User findByFirstName(String firstName) {
+		return userRepository.findByFirstName(firstName);
 	}
 	
 	public void deleteById(Long id) {
