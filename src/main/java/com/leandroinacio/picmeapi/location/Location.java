@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -43,11 +43,11 @@ public class Location extends BaseEntity {
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Calendar endDate;
 
-	@ManyToMany @JsonIgnore @OrderColumn
+	@ManyToOne @JsonIgnore
 	@JoinColumn(unique=false, nullable=true, insertable=true)
-	private List<User> user;
+	private User user;
 
-	@ManyToMany @JsonIgnore
+	@OneToMany @JsonIgnore
 	@JoinColumn(unique=false, nullable=true, insertable=true)
 	private List<Picture> picture;
 	

@@ -7,28 +7,34 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.leandroinacio.picmeapi.role.Role;
+
 @Service
 public class PermissionService implements IPermissionService {
 
 	private static final Logger log = LoggerFactory.getLogger(PermissionService.class);
 	
 	@Autowired
-	public IPermissionRepository roleRepository;
+	public IPermissionRepository permissionRepository;
 	
-	public Permission save(Permission role) {
-		return this.roleRepository.save(role);
+	public Permission save(Permission permission) {
+		return this.permissionRepository.save(permission);
 	}
 
 	public Permission findById(Long id) {
-		return this.roleRepository.findById(id);
+		return this.permissionRepository.findById(id);
 	}
 
 	public Page<Permission> findAll(Integer page, Integer size) {
-		return this.roleRepository.findAll(PageRequest.of(page, size));
+		return this.permissionRepository.findAll(PageRequest.of(page, size));
+	}
+
+	public Page<Permission> findByRole(Role role ,Integer page, Integer size) {
+		return this.permissionRepository.findByRole(role, PageRequest.of(page, size));
 	}
 
 	public void deleteById(Long id) {
-		this.roleRepository.deleteById(id);
+		this.permissionRepository.deleteById(id);
 	}
 
 }

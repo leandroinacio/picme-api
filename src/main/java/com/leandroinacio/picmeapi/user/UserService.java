@@ -1,5 +1,7 @@
 package com.leandroinacio.picmeapi.user;
 
+import java.util.Calendar;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ public class UserService implements IUserService {
 	private IUserRepository userRepository;
 	
 	public void save(User user) {
+		if (user.getLastPasswordReset() == null) {
+			user.setLastPasswordReset(Calendar.getInstance());
+		}
 		userRepository.save(user);
 	}
 	

@@ -1,5 +1,6 @@
 package com.leandroinacio.picmeapi.jwt;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,13 +16,17 @@ public class JwtUserFactory {
     }
 
     public static JwtUser create(User user) {
+    	List<Permission> permissions = new ArrayList<>();
+    	if (user.getRole() != null) {
+    		permissions = user.getRole().getPermissions();
+    	}
         return new JwtUser(
         		user.getEmail(),
         		user.getFirstName(),
         		user.getLastName(),
         		user.getEmail(),
         		user.getPassword(),
-                mapToGrantedAuthorities(user.getPermissions()),
+                mapToGrantedAuthorities(permissions),
                 user.isActive(),
                 user.getLastPasswordReset()
         );

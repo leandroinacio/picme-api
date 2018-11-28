@@ -41,13 +41,9 @@ public class Picture extends BaseEntity {
 	@ManyToMany(fetch=FetchType.EAGER) @OrderColumn
 	@JoinColumn(unique=false, nullable=true, insertable=true)
 	private List<User> owner;
-	
-	@ManyToMany @JsonIgnore
-	@JoinColumn(unique=false, nullable=true, insertable=true)
-	private List<User> faceMatch;
-	
-	@ManyToMany(fetch=FetchType.EAGER)
-	private List<Location> location;
+		
+	@ManyToOne(fetch=FetchType.EAGER)
+	private Location location;
 	
 	@Transient @JsonIgnore
 	private Resource file;

@@ -55,7 +55,7 @@ public class PictureController extends BaseController {
 			picture.setFileType("image/jpeg");
 			picture.setPhotographer(user);
 			picture.setOwner(Arrays.asList(user));
-			picture.setLocation(Arrays.asList(location));
+			picture.setLocation(location);
 
 		}
 		this.pictureService.upload(picture, file);

@@ -3,10 +3,11 @@ package com.leandroinacio.picmeapi.user;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -19,8 +20,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.leandroinacio.picmeapi.base.BaseEntity;
-import com.leandroinacio.picmeapi.permission.Permission;
+import com.leandroinacio.picmeapi.location.Location;
 import com.leandroinacio.picmeapi.picture.Picture;
+import com.leandroinacio.picmeapi.role.Role;
 import com.leandroinacio.picmeapi.utils.DateUtils;
 
 import lombok.Data;
@@ -31,7 +33,7 @@ public class User extends BaseEntity {
 	@Transient @JsonIgnore
 	private static final long serialVersionUID = 1L;
 
-	@NotEmpty
+	@NotEmpty @Column(unique=true)
 	private String email;
 	
 	@NotEmpty
@@ -45,13 +47,16 @@ public class User extends BaseEntity {
 
 	@OneToMany @JsonIgnore
 	List<Picture> pictures;
+
+	@OneToMany @JsonIgnore
+	List<Location> locations;
 	
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(unique=false, nullable=true, insertable=true)
-	List<Permission> permissions;
+	Role role;
 	
 	@Temporal(TemporalType.TIMESTAMP) @NotNull
     @DateTimeFormat(pattern = DateUtils.DEFAULT_FORMAT)
 	private Calendar lastPasswordReset;
-	
+
 }
