@@ -11,10 +11,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.leandroinacio.picmeapi.base.BaseController;
 import com.leandroinacio.picmeapi.base.BaseResponse;
+import com.leandroinacio.picmeapi.jwt.JwtUser;
 import com.leandroinacio.picmeapi.location.Location;
 import com.leandroinacio.picmeapi.user.User;
 import com.leandroinacio.picmeapi.utils.FileUtils;
@@ -37,10 +41,11 @@ public class PictureController extends BaseController {
 	
 	// TODO: Figure out this validation
 	//consumes = {MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}
-	@PostMapping(value="/upload")
+	@PutMapping(value="/upload")
 	public BaseResponse upload(@RequestParam Picture picture, 
 			@RequestParam MultipartFile file) throws IOException {
 		
+		//SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		//TODO: Remove it, adding just for test sake.
 		if (picture == null) { 
 			

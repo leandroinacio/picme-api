@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,10 +18,14 @@ public class UserService implements IUserService {
 	@Autowired
 	private IUserRepository userRepository;
 	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 	public void save(User user) {
 		if (user.getLastPasswordReset() == null) {
 			user.setLastPasswordReset(Calendar.getInstance());
 		}
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		userRepository.save(user);
 	}
 	

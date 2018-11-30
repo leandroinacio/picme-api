@@ -21,7 +21,7 @@ public class UserController extends BaseController {
 		
 	@Autowired
 	private IUserService userService;
-	
+
 	@PutMapping("/save")
 	public BaseResponse save(@RequestBody User user) {
 		this.userService.save(user);

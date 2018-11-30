@@ -1,4 +1,4 @@
-package com.leandroinacio.picmeapi.security;
+package com.leandroinacio.picmeapi.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -38,8 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
-	    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-	    return bCryptPasswordEncoder;
+	    return new BCryptPasswordEncoder();
 	}
 	
 	@Bean
@@ -53,11 +52,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
         httpSecurity
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
-
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
 
                 // don't create session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS).and()
 
                 .authorizeRequests()
                 //.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -67,6 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 //                        HttpMethod.GET,
 //                        "/",
 //                        "/*.html",
+//                        "/*.png",
+//                        "/*.ttf",
 //                        "/favicon.ico",
 //                        "/**/*.html",
 //                        "/**/*.css",
@@ -74,6 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 //                ).permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/user/save").permitAll()
+                .antMatchers("/v2/api-docs", "/swagger-resources/**", "/configuration/security", 
+                		"/swagger-ui.html", "/webjars/**").permitAll()
                 .anyRequest().authenticated();
 
         // Custom JWT based security filter

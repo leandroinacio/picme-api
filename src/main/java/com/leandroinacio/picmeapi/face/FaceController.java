@@ -7,6 +7,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,10 +29,10 @@ public class FaceController extends BaseController {
 	@Autowired
 	private IFaceService faceService;
 	
-	// TODO: Figure out this validation
+	// TODO: Figure out this validation, pass user to service and fill required data
 	//consumes = {MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}
 	@PostMapping(value="/upload")
-	public BaseResponse upload(@RequestParam MultipartFile file) throws IOException {
+	public BaseResponse upload(@RequestParam MultipartFile file, Authentication authentication) throws IOException {
 		return new BaseResponse(faceService.upload(file));
 	}
 		

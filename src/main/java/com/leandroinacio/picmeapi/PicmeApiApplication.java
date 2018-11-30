@@ -1,8 +1,6 @@
 package com.leandroinacio.picmeapi;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.leandroinacio.picmeapi.permission.Permission;
 import com.leandroinacio.picmeapi.user.IUserRepository;
 import com.leandroinacio.picmeapi.user.User;
 
