@@ -20,14 +20,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.leandroinacio.picmeapi.base.BaseEntity;
+import com.leandroinacio.picmeapi.jwt.JwtUser;
 import com.leandroinacio.picmeapi.location.Location;
 import com.leandroinacio.picmeapi.picture.Picture;
 import com.leandroinacio.picmeapi.role.Role;
 import com.leandroinacio.picmeapi.utils.DateUtils;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity @Table(name = "UserAccount") @Data
+@AllArgsConstructor @NoArgsConstructor
 public class User extends BaseEntity {
 
 	@Transient @JsonIgnore
@@ -52,11 +56,17 @@ public class User extends BaseEntity {
 	List<Location> locations;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(unique=false, nullable=true, insertable=true)
+	@JoinColumn(unique=false,nullable=false,insertable=true)
 	Role role;
 	
 	@Temporal(TemporalType.TIMESTAMP) @NotNull
     @DateTimeFormat(pattern = DateUtils.DEFAULT_FORMAT)
 	private Calendar lastPasswordReset;
 
+	public User(JwtUser jwtUser) {
+		super();
+		this.setId(jwtUser.getId());
+		this.setActive(jwtUser.isEnabled());
+		this.setCreateDate(jwtUser.getCreateDate());
+	}
 }

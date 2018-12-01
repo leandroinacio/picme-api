@@ -47,11 +47,24 @@ public class FileUtils {
 	 * @throws IOException
 	 */
 	public static void copyToFolderAndRenameFile(MultipartFile file, String path, String newFileName) throws IOException {
+		
+		// The temp folder is used to make sure the name of the file uploaded 
+		// does not match any previous existing file
+		final String TEMP_FOLDER = path + "/temp/";
+		
+		// Create folders 
 		FileUtils.checkAndCreatePaths(path);
-		Files.copy(file.getInputStream(), Paths.get(path, file.getOriginalFilename()));
-		File oldName = new File(path + file.getOriginalFilename());
-		File newName = new File(path + newFileName);
+		FileUtils.checkAndCreatePaths(TEMP_FOLDER);
+		
+		// Copy file to temp folder and rename it
+		Files.copy(file.getInputStream(), Paths.get(TEMP_FOLDER, file.getOriginalFilename()));
+		File oldName = new File(TEMP_FOLDER + file.getOriginalFilename());
+		File newName = new File(TEMP_FOLDER + newFileName);
 		oldName.renameTo(newName);
+		
+		// Copy to previous folder and delete file from temp folder
+		Files.copy(file.getInputStream(), Paths.get(path, newFileName));
+		Files.delete(Paths.get(TEMP_FOLDER, newFileName));
 	}
 
 	public static List<Mat> detectFace(File file) {

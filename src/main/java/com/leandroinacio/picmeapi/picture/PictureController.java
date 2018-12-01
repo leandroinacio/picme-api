@@ -11,8 +11,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,35 +41,35 @@ public class PictureController extends BaseController {
 	
 	// TODO: Figure out this validation
 	//consumes = {MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}
+	@PreAuthorize("hasAuthority('CREATE_PICTURE')")
 	@PutMapping(value="/upload")
 	public BaseResponse upload(@RequestParam Picture picture, 
-			@RequestParam MultipartFile file) throws IOException {
+			@RequestParam MultipartFile file, Authentication auth) throws IOException {
 		
-		//SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		//TODO: Remove it, adding just for test sake.
 		if (picture == null) { 
-			
-			User user = new User();
-			user.setId((long)1);
-			
 			Location location = new Location();
 			location.setId((long)1);
 
+			JwtUser jwtUser = (JwtUser) auth.getPrincipal();
+			User user = new User(jwtUser);
+			
 			picture = new Picture();
 			picture.setDescription("teste teste");
 			picture.setFileType("image/jpeg");
 			picture.setPhotographer(user);
 			picture.setOwner(Arrays.asList(user));
 			picture.setLocation(location);
-
 		}
-		this.pictureService.upload(picture, file);
+		
+		this.pictureService.upload(picture, file, (JwtUser) auth.getPrincipal());
 		return new BaseResponse();
 	}
 
+	@PreAuthorize("hasAuthority('SERVE_USER_PICTURE')")
 	@GetMapping("/serveOneImageById/{id}")
-	public ResponseEntity<Resource> serveImage(@PathVariable Long id) {
-		Picture picture = this.pictureService.serveOneImageById(id);
+	public ResponseEntity<Resource> serveImage(@PathVariable Long id, Authentication auth) {
+		Picture picture = this.pictureService.serveOneImageById(id, (JwtUser) auth.getPrincipal());
 		return ResponseEntity.ok()
 				.contentType(MediaType.parseMediaType(picture.getFileType()))
 				.header(HttpHeaders.CONTENT_DISPOSITION, ":attachment; filename=\"" 
@@ -77,42 +77,40 @@ public class PictureController extends BaseController {
 				.body(picture.getFile());
 	}
 	
+	@PreAuthorize("hasAuthority('ADD_OWNER_PICTURE')")
 	@PostMapping("/addOwner")
 	public BaseResponse addOwner(@RequestParam Picture picture, 
-			@RequestParam User user) throws IOException {
-		this.pictureService.addOwner(picture, user);
+			Authentication auth) throws IOException {
+		this.pictureService.addOwner(picture, (JwtUser) auth.getPrincipal());
 		return new BaseResponse();
 	}
 
-	@GetMapping("/findByPhotographer/{page}/{size}/{id}") 
+	@PreAuthorize("hasAuthority('FIND_PHOTOGRAPHER_PICTURE')")
+	@GetMapping("/findByPhotographer/{page}/{size}") 
 	public BaseResponse findByPhotographer(@PathVariable Integer page, 
 			@PathVariable Integer size, @PathVariable Long id) {
 		return new BaseResponse(this.pictureService.findByPhotographer(new User() {{ setId(id);}}, page, size));
 	}
 
-	@GetMapping("/findByOwner/{page}/{size}/{id}") 
+	@PreAuthorize("hasAuthority('FIND_OWNER_PICTURE')")
+	@GetMapping("/findByOwner/{page}/{size}") 
 	public BaseResponse findByOwner(@PathVariable Integer page, 
-			@PathVariable Integer size, @PathVariable Long id) {
-		return new BaseResponse(this.pictureService.findByOwner(new User() {{ setId(id);}}, page, size));
+			@PathVariable Integer size, Authentication auth) {
+		return new BaseResponse(this.pictureService.findByOwner((JwtUser) auth.getPrincipal(), page, size));
 	}
 	
+	@PreAuthorize("hasAuthority('DELETE_USER_PICTURE')")
 	@DeleteMapping("/deleteById")
-	public BaseResponse delete(@RequestParam Picture picture) throws IOException {
-		
-		// TODO: Add user when security is implemented
-		this.pictureService.deleteImage(picture, null);
+	public BaseResponse delete(@RequestParam Picture picture, Authentication auth) throws IOException {		
+		this.pictureService.deleteImage(picture, (JwtUser) auth.getPrincipal());
 		return new BaseResponse();
 	}
 	
+	@PreAuthorize("hasAuthority('SEARCH_PICTURES')")
 	@PostMapping("/searchPictures")
-//	@RequestParam List<Location> locations
-	public BaseResponse searchPictures(@RequestBody List<Location> locations) {
+	public BaseResponse searchPictures(@RequestBody List<Location> locations, Authentication auth) {
 		
-		// TODO: Change this. We need the user from security.
-		// The user id hardcoded here just for test sake.
-		User user = new User() {{ setId(1L); }};
-		
-		BaseResponse baseResponse = new BaseResponse(this.pictureService.searchPicturesAndAnalyze(user, locations));
+		BaseResponse baseResponse = new BaseResponse(this.pictureService.searchPicturesAndAnalyze((JwtUser) auth.getPrincipal(), locations));
 		return baseResponse;
 		
 	}

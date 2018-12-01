@@ -11,7 +11,7 @@ public interface IPermissionRepository extends Repository<Permission, Long> {
 	public Permission save(Permission permission);
 	public Permission findById(Long id);
 	public Page<Permission> findAll(Pageable pageable);
-	public Page<Permission> findByRole(Role role, Pageable pageable);
+	public Page<Permission> findByRoles(Role role, Pageable pageable);
 	public void deleteById(Long id);
 
 }

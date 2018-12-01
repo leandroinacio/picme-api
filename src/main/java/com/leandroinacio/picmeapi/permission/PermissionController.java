@@ -16,6 +16,7 @@ import com.leandroinacio.picmeapi.base.BaseController;
 import com.leandroinacio.picmeapi.base.BaseResponse;
 import com.leandroinacio.picmeapi.role.Role;
 
+// TODO: Security, many-to-many problem with the role table
 @RestController @RequestMapping("/permission")
 public class PermissionController extends BaseController {
 

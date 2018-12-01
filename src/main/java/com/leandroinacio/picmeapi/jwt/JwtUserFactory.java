@@ -21,6 +21,7 @@ public class JwtUserFactory {
     		permissions = user.getRole().getPermissions();
     	}
         return new JwtUser(
+        		user.getId(),
         		user.getEmail(),
         		user.getFirstName(),
         		user.getLastName(),
@@ -28,7 +29,8 @@ public class JwtUserFactory {
         		user.getPassword(),
                 mapToGrantedAuthorities(permissions),
                 user.isActive(),
-                user.getLastPasswordReset()
+                user.getLastPasswordReset(),
+                user.getCreateDate()
         );
     }
 

@@ -30,7 +30,7 @@ public class PermissionService implements IPermissionService {
 	}
 
 	public Page<Permission> findByRole(Role role ,Integer page, Integer size) {
-		return this.permissionRepository.findByRole(role, PageRequest.of(page, size));
+		return this.permissionRepository.findByRoles(role, PageRequest.of(page, size));
 	}
 
 	public void deleteById(Long id) {

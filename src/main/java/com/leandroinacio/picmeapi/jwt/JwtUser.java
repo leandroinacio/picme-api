@@ -2,6 +2,8 @@ package com.leandroinacio.picmeapi.jwt;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class JwtUser implements UserDetails {
 
 	private static final long serialVersionUID = -1L;
-	private final String id;
+	private final Long id;
     private final String username;
     private final String firstname;
     private final String lastname;
@@ -20,17 +22,20 @@ public class JwtUser implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean enabled;
     private final Calendar lastPasswordResetDate;
+    private final Calendar createDate;
 
     public JwtUser(
+		  Long id,
           String username,
           String firstname,
           String lastname,
           String email,
           String password, Collection<? extends GrantedAuthority> authorities,
           boolean enabled,
-          Calendar calendar
+          Calendar calendar,
+          Calendar createDate
     ) {
-        this.id = username;
+        this.id = id;
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -39,13 +44,14 @@ public class JwtUser implements UserDetails {
         this.authorities = authorities;
         this.enabled = enabled;
         this.lastPasswordResetDate = calendar;
+        this.createDate = createDate;
     }
 
-    @JsonIgnore
-    public String getId() {
+	@JsonIgnore
+    public Long getId() {
         return id;
     }
-
+	
     @Override
     public String getUsername() {
         return username;
@@ -101,4 +107,10 @@ public class JwtUser implements UserDetails {
     public Calendar getLastPasswordResetDate() {
         return lastPasswordResetDate;
     }
+    
+	@JsonIgnore
+    public Calendar getCreateDate() {
+        return this.createDate;
+    }
+
 }

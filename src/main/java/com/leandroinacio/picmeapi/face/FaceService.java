@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.Mat;
 import org.bytedeco.javacpp.opencv_core.MatVector;
-import org.bytedeco.javacpp.opencv_core.Size;
 import org.bytedeco.javacpp.opencv_face.EigenFaceRecognizer;
 import org.bytedeco.javacpp.opencv_face.FaceRecognizer;
 import org.bytedeco.javacpp.opencv_face.FisherFaceRecognizer;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.leandroinacio.picmeapi.jwt.JwtUser;
 import com.leandroinacio.picmeapi.user.IUserRepository;
 import com.leandroinacio.picmeapi.user.User;
 import com.leandroinacio.picmeapi.utils.FileUtils;
@@ -35,19 +35,15 @@ public class FaceService implements IFaceService {
 	
 	@Autowired
 	private IFaceRepository faceRespository;
-	
-	@Autowired
-	private IUserRepository userRepository;
-	
+		
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public Face upload(MultipartFile file) throws IOException {
+	public Face upload(MultipartFile file, JwtUser jwtUser) throws IOException {
 		
-		// TODO: Get the user sending the file
-		User user = userRepository.findById((long)1);
+		// Set the user
+		User user = new User(jwtUser);
 		
-		// TODO: Double check face values
 		// Create face object and save to the db
 		Face face = new Face();
 		face.setUser(user);
@@ -65,46 +61,55 @@ public class FaceService implements IFaceService {
 		return this.faceRespository.findAll(PageRequest.of(page, size));
 	}
 
-	public Page<Face> findByUser(User user, Integer page, Integer size) {
-		return this.faceRespository.findByUser(user, PageRequest.of(page, size));
+	public Page<Face> findByUser(JwtUser jwtUser, Integer page, Integer size) {
+		return this.faceRespository.findByUser(new User(jwtUser), PageRequest.of(page, size));
 	}
 	
-	public Face serveOneImageById(Long id) {
-		Face face = this.faceRespository.findById(id); //TODO: if null return 
-		String filePath = FileUtils.getUserFacePath(face.getUser()) + 
-				FileUtils.getFileName(face.getId(), face.getFileType());
-		face.setFile(resourceLoader.getResource("file:" + filePath));
+	public Face serveOneImageById(Long id, JwtUser jwtUser) {
+		Face face = this.faceRespository.findById(id);
+		
+		// Returns only if user matches the user requesting file
+		if (face.getUser().getId() == jwtUser.getId()) {
+			String filePath = FileUtils.getUserFacePath(face.getUser()) + 
+					FileUtils.getFileName(face.getId(), face.getFileType());
+			face.setFile(resourceLoader.getResource("file:" + filePath));
+		}
 		return face;
 	}
 
-	public void deleteImage(Long id) throws IOException {
+	public void deleteImage(Long id, JwtUser jwtUser) throws IOException {
 		Face face = this.faceRespository.findById(id);
-		this.faceRespository.deleteById(face.getId());
-		Files.deleteIfExists(Paths.get(FileUtils.getUserFacePath(face.getUser()), 
-				FileUtils.getFileName(face.getId(), face.getFileType())));
+		
+		// Remove only if face user matches the user on request
+		if (jwtUser.getId() == face.getUser().getId()) {
+			this.faceRespository.deleteById(face.getId());
+			Files.deleteIfExists(Paths.get(FileUtils.getUserFacePath(face.getUser()), 
+					FileUtils.getFileName(face.getId(), face.getFileType())));
+		}
 	}
 	
-	public void train(Long userId) {
+	public void train(JwtUser jwtUser) {
 			
-		// Setup user to fetch and face to get folder
-		User user = new User() {{ setId(userId); }};
-		Face face = this.faceRespository.findByUser(user, PageRequest.of(0, 50)).getContent().get(0);
+		// Setup user to get folder
+		User user = new User(jwtUser);
 		
 		// Setup folder and get files
-		File folder = new File(FileUtils.getUserFacePath(face.getUser()));
+		File folder = new File(FileUtils.getUserFacePath(user));
 		FilenameFilter nameFilter = FileUtils.getDefaultFilenameFilter();
-		
-		// TODO: change this to get each file returned by the findByUser method.
 		File[] files = folder.listFiles(nameFilter);
-			
+		
+		// Setup folder name and facial recognition methods
+		String folderName = folder.getAbsolutePath() + "/";
+        FaceRecognizer eigenfaces = EigenFaceRecognizer.create();
+        FaceRecognizer fisherfaces = FisherFaceRecognizer.create();
+        FaceRecognizer lbph = LBPHFaceRecognizer.create();
+		
 		// Setup info on javacv analyzer
 		MatVector faces = new MatVector(files.length);
-		
-		// TODO: The size here could return java.nio.BufferOverflowException if there are more than one face in the picture?
 		Mat labels = new Mat(files.length, 1, opencv_core.CV_32SC1);
 		IntBuffer labelBuffer = labels.createBuffer();
 		
-		// Iterate images and prepare for analyze
+		// Iterate images and prepare Map to analyze
 		for (Integer pos = 0; pos < files.length; pos++) {
 						
 			File file = files[pos];
@@ -115,16 +120,14 @@ public class FaceService implements IFaceService {
 			// Add faces found and user id to label
 			faces.put(pos, faceToAnalyze);
 			
-			// TODO: Think about better solution
+			// TODO: Think about better solution.
+			// Should be the user ID, but it doesn't accept long values
+			// And it does not accept just one label per analize
 			labelBuffer.put(pos);
 		}
 
 		// Train facial recognition and save files
-		String folderName = folder.getAbsolutePath() + "/";
-        FaceRecognizer eigenfaces = EigenFaceRecognizer.create();
-        FaceRecognizer fisherfaces = FisherFaceRecognizer.create();
-        FaceRecognizer lbph = LBPHFaceRecognizer.create();
-        eigenfaces.train(faces, labels);
+		eigenfaces.train(faces, labels);
         eigenfaces.save(folderName + "eigen.yml");
         fisherfaces.train(faces, labels);
         fisherfaces.save(folderName + "fisher.yml");

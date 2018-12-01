@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.acl.Owner;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.leandroinacio.picmeapi.jwt.JwtUser;
 import com.leandroinacio.picmeapi.location.Location;
 import com.leandroinacio.picmeapi.user.IUserRepository;
 import com.leandroinacio.picmeapi.user.User;
@@ -38,14 +40,10 @@ public class PictureService implements IPictureService {
 	@Autowired
 	private ResourceLoader resourceLoader;
 	
-	public Picture upload(Picture picture, MultipartFile file) throws IOException {
+	public Picture upload(Picture picture, MultipartFile file, JwtUser jwtUser) throws IOException {
 		
-		// TODO: Get the photographer sending the picture
-		User photographer = userRepository.findById((long) 1);
-		
-		// TODO: Double check picture values (photographer)
 		// Setup missing values from picture and save to the db
-		picture.setPhotographer(photographer);
+		picture.setPhotographer(new User(jwtUser));
 		picture.setFileType(file.getContentType());		
 		picture = this.pictureRepository.save(picture);
 		
@@ -58,10 +56,10 @@ public class PictureService implements IPictureService {
 		return picture;
 	}
 	
-	public void addOwner(Picture picture, User user) throws IOException {
+	public void addOwner(Picture picture, JwtUser jwtUser) throws IOException {
 		
 		// Add new user as owner of the picture
-		picture.getOwner().add(user);
+		picture.getOwner().add(new User(jwtUser));
 		this.pictureRepository.save(picture);
 		
 		// Move file to new owner folder
@@ -73,25 +71,50 @@ public class PictureService implements IPictureService {
 			);
 	}
 	
-	public void deleteImage(Picture picture, User user) throws IOException {
+	public void deleteImage(Picture picture, JwtUser jwtUser) throws IOException {
 		
-		// TODO: Figure out how to do security on who can delete it
-		// User user = this.pictureRepository.findByIdAndUser(picture.getId(), user);
-		this.pictureRepository.deleteById(picture.getId());
+		// Fetch all pictue data and remove photographer or owner who did the request
+		picture = this.pictureRepository.findById(picture.getId());
 		
-		// TODO: Delete from folder only if there are 0 owners and photographers
-//		Files.deleteIfExists(Paths.get(FileUtils.getPicturePath(picture), 
-//				FileUtils.getFileName(picture.getId(), picture.getFileType())));
-		// Files.deleteIfExists(Paths.get(this.getDemoFilePath(picture), this.getFileName(picture)));
+		if (picture.getPhotographer().getId() == jwtUser.getId()) {
+			picture.setPhotographer(null);
+		}else {
+			for (User owner : picture.getOwner()) {
+				if (owner.getId() == jwtUser.getId()) {
+					picture.getOwner().remove(owner);
+				}
+			}
+		}
+	
+		// If everybody deleted, remove it from picture db and delete from folder
+		if (picture.getPhotographer() == null && picture.getOwner().isEmpty()) {
+			this.pictureRepository.deleteById(picture.getId());
+			Files.deleteIfExists(Paths.get(FileUtils.getPicturePath(picture), 
+			FileUtils.getFileName(picture.getId(), picture.getFileType())));
+			
+			// TODO: Remove demo file
+			// Files.deleteIfExists(Paths.get(this.getDemoFilePath(picture), this.getFileName(picture)));
+		}
 	}
 	
-	public Picture serveOneImageById(Long id) {
+	public Picture serveOneImageById(Long id, JwtUser jwtUser) {
 		Picture picture = this.pictureRepository.findById(id);
+		Boolean isOwnerOrPhotographer = picture.getPhotographer().getId() == jwtUser.getId();
 		
-		// TODO: Figure out security to handle photographer vs owner folder
-		String filePath = FileUtils.getPicturePath(picture) 
-				+ FileUtils.getFileName(picture.getId(), picture.getFileType());
-		picture.setFile(resourceLoader.getResource("file:" + filePath));
+		if (!isOwnerOrPhotographer) { 
+			for (User owner : picture.getOwner()) {
+				if (owner.getId()==jwtUser.getId()) {
+					isOwnerOrPhotographer = true;
+					break;
+				}
+			}
+		}
+		
+		if (isOwnerOrPhotographer) {
+			String filePath = FileUtils.getPicturePath(picture) 
+					+ FileUtils.getFileName(picture.getId(), picture.getFileType());
+			picture.setFile(resourceLoader.getResource("file:" + filePath));
+		}
 		return picture;
 	}
 	
@@ -99,11 +122,13 @@ public class PictureService implements IPictureService {
 		return this.pictureRepository.findByPhotographer(photographer, PageRequest.of(page, size));
 	}
 
-	public Page<Picture> findByOwner(User owner, Integer page, Integer size) {
-		return this.pictureRepository.findByOwner(owner, PageRequest.of(page, size));
+	public Page<Picture> findByOwner(JwtUser jwtUser, Integer page, Integer size) {
+		return this.pictureRepository.findByOwner(new User(jwtUser), PageRequest.of(page, size));
 	}
 			
-	public List<Picture> searchPicturesAndAnalyze(User user, List<Location> locations) {
+	public List<Picture> searchPicturesAndAnalyze(JwtUser jwtUser, List<Location> locations) {
+		
+		User user = new User(jwtUser);
 		
 		// Find pictures that match locations
 		// TODO: Update findByLocation to retrieve all locations

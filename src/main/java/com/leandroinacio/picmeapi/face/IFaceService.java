@@ -5,15 +5,15 @@ import java.io.IOException;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.leandroinacio.picmeapi.user.User;
+import com.leandroinacio.picmeapi.jwt.JwtUser;
 
 public interface IFaceService {
 	
-	public Face upload(MultipartFile file) throws IOException;
+	public Face upload(MultipartFile file, JwtUser jwtUser) throws IOException;
 	public Page<Face> findAll(Integer page, Integer size);
-	public Page<Face> findByUser(User user, Integer page, Integer size);
-	public Face serveOneImageById(Long id);
-	public void deleteImage(Long id) throws IOException;
-	public void train(Long userId);
+	public Page<Face> findByUser(JwtUser jwtUser, Integer page, Integer size);
+	public Face serveOneImageById(Long id, JwtUser jwtUser);
+	public void deleteImage(Long id, JwtUser jwtUser) throws IOException;
+	public void train(JwtUser jwtUser);
 	
 }

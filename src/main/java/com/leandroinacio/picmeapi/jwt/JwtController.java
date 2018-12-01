@@ -58,7 +58,7 @@ public class JwtController {
         
         // Return the token
         // TODO: Maybe return the user? How can we do it without 2 calls?
-        return ResponseEntity.ok(new JwtCurrentUser(token, null));
+        return ResponseEntity.ok(new JwtCurrentUser(token));
     }
 
     @GetMapping("/refresh")

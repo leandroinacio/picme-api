@@ -35,7 +35,7 @@ public class Picture extends BaseEntity {
 	private String fileType;
 		
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(unique=false, nullable=false, insertable=true)
+	@JoinColumn(unique=false, nullable=true, insertable=true)
 	private User photographer;
 
 	@ManyToMany(fetch=FetchType.EAGER) @OrderColumn

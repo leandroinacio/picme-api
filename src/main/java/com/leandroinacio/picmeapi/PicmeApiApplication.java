@@ -1,5 +1,6 @@
 package com.leandroinacio.picmeapi;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 import org.springframework.boot.CommandLineRunner;
@@ -8,6 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.leandroinacio.picmeapi.permission.IPermissionRepository;
+import com.leandroinacio.picmeapi.permission.Permission;
+import com.leandroinacio.picmeapi.role.IRoleRepository;
+import com.leandroinacio.picmeapi.role.Role;
 import com.leandroinacio.picmeapi.user.IUserRepository;
 import com.leandroinacio.picmeapi.user.User;
 
@@ -20,13 +25,28 @@ public class PicmeApiApplication {
 	}
 	
 	@Bean
-	CommandLineRunner init(IUserRepository userRepository, PasswordEncoder passwordEncoder) {
+	CommandLineRunner init(IUserRepository userRepository, PasswordEncoder passwordEncoder
+			, IRoleRepository roleRepository, IPermissionRepository permissionRepository) {
 		return args -> {
-			initUser(userRepository, passwordEncoder);
+			initUser(userRepository, passwordEncoder, roleRepository, permissionRepository);
 		};
 	}
 	
-	private void initUser(IUserRepository userRepository, PasswordEncoder passwordEnconder) {
+	private void initUser(IUserRepository userRepository, PasswordEncoder passwordEnconder
+			, IRoleRepository roleRepository, IPermissionRepository permissionRepository) {
+		
+		// Setup admin role
+		Role adm = new Role("Admin", null, null);
+		roleRepository.save(adm);
+		
+		// Setup permission
+		Permission prm = new Permission("CREATE_FACE", Arrays.asList(adm));
+		permissionRepository.save(prm);
+		
+		adm.setPermissions(Arrays.asList(prm));
+		roleRepository.save(adm);
+		
+		// Setup user
 		User user = new User();
 		user.setFirstName("le");
 		user.setLastName("le");
@@ -34,10 +54,7 @@ public class PicmeApiApplication {
 		user.setPassword(passwordEnconder.encode("123"));
 		user.setActive(true);
 		user.setLastPasswordReset(Calendar.getInstance());
-//		List<Permission> p = new ArrayList<>();
-//		p.add(new Permission());
-//		p.get(0).setName("Admin");
-//		user.setPermissions(p);
+		user.setRole(adm);
 		
 		User nUser = userRepository.findByEmail("le@le.com");
 		if (nUser == null) {
