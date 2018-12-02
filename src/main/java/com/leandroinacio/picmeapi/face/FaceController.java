@@ -1,7 +1,6 @@
 package com.leandroinacio.picmeapi.face;
 
 import java.io.IOException;
-import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -30,7 +29,7 @@ public class FaceController extends BaseController {
 	@Autowired
 	private IFaceService faceService;
 	
-	// TODO: Figure out this validation, pass user to service and fill required data
+	// TODO: Figure out this validation
 	//consumes = {MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}
 	@PreAuthorize("hasAuthority('CREATE_FACE')")
 	@PostMapping(value="/upload")
@@ -47,14 +46,14 @@ public class FaceController extends BaseController {
 	@PreAuthorize("hasAuthority('VIEW_USER_FACES')")
 	@GetMapping("findByUser/{page}/{size}")
 	public BaseResponse findAll(@PathVariable Integer page, 
-			@PathVariable Integer size, Principal principal) {
-		return new BaseResponse(faceService.findByUser((JwtUser) principal, page, size));
+			@PathVariable Integer size, Authentication auth) {
+		return new BaseResponse(faceService.findByUser((JwtUser) auth.getPrincipal(), page, size));
 	}
 	
 	@PreAuthorize("hasAuthority('SERVE_USER_FACES')")
 	@GetMapping("/serveOneImageById/{id}")
-	public ResponseEntity<Resource> serveOneImageById(@PathVariable Long id, Principal principal) {
-		Face face = faceService.serveOneImageById(id, (JwtUser) principal);
+	public ResponseEntity<Resource> serveOneImageById(@PathVariable Long id, Authentication auth) {
+		Face face = faceService.serveOneImageById(id, (JwtUser) auth.getPrincipal());
 		return ResponseEntity.ok()
 		.contentType(MediaType.parseMediaType(face.getFileType()))
 		.header(HttpHeaders.CONTENT_DISPOSITION, ":attachment; filename=\"" 
@@ -64,16 +63,16 @@ public class FaceController extends BaseController {
 	
 	@PreAuthorize("hasAuthority('DELETE_USER_FACES')")
 	@DeleteMapping("/deleteById/{id}")
-	public BaseResponse delete(@PathVariable Long id, Principal principal) throws IOException {
-		faceService.deleteImage(id, (JwtUser) principal);
+	public BaseResponse delete(@PathVariable Long id, Authentication auth) throws IOException {
+		faceService.deleteImage(id, (JwtUser) auth.getPrincipal());
 		return new BaseResponse();
 	}
 	
 	// TODO: Validate if user has more than 2 files
 	@PreAuthorize("hasAuthority('TRAIN_FACES')")
 	@PostMapping("/train")
-	public BaseResponse train(Principal principal) {
-		faceService.train((JwtUser) principal);
+	public BaseResponse train(Authentication auth) {
+		faceService.train((JwtUser) auth.getPrincipal());
 		return new BaseResponse();
 	}
 }

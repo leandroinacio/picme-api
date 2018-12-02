@@ -2,12 +2,11 @@ package com.leandroinacio.picmeapi.role;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
@@ -29,12 +28,14 @@ public class Role extends BaseEntity {
 
 	@NotEmpty
 	private String name;
-	
-	@ManyToMany(fetch=FetchType.EAGER) @OrderColumn
-	@JoinColumn(unique=false,nullable=false,insertable=true)
+
+	// TODO: many-to-many problem with the permission table
+	@OneToMany(fetch=FetchType.EAGER,cascade=CascadeType.ALL)
+	@JoinColumn(name="role",unique=false,nullable=true,insertable=true)
 	List<Permission> permissions;
 	
-	@OneToMany
+	@OneToMany(fetch=FetchType.LAZY,cascade=CascadeType.ALL)
+	@JoinColumn(name="role",unique=false,nullable=true,insertable=true)
 	List<User> user;
 		
 }

@@ -55,8 +55,8 @@ public class User extends BaseEntity {
 	@OneToMany @JsonIgnore
 	List<Location> locations;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(unique=false,nullable=false,insertable=true)
+	@ManyToOne(fetch=FetchType.EAGER) @JsonIgnore
+	@JoinColumn(name="role_id",unique=false,nullable=false,insertable=true)
 	Role role;
 	
 	@Temporal(TemporalType.TIMESTAMP) @NotNull

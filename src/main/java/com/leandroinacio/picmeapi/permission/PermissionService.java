@@ -29,10 +29,6 @@ public class PermissionService implements IPermissionService {
 		return this.permissionRepository.findAll(PageRequest.of(page, size));
 	}
 
-	public Page<Permission> findByRole(Role role ,Integer page, Integer size) {
-		return this.permissionRepository.findByRoles(role, PageRequest.of(page, size));
-	}
-
 	public void deleteById(Long id) {
 		this.permissionRepository.deleteById(id);
 	}

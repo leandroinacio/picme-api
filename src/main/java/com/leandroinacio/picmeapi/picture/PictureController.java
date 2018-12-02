@@ -41,7 +41,7 @@ public class PictureController extends BaseController {
 	
 	// TODO: Figure out this validation
 	//consumes = {MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}
-	@PreAuthorize("hasAuthority('CREATE_PICTURE')")
+	@PreAuthorize("hasAuthority('PICTURE_CREATE')")
 	@PutMapping(value="/upload")
 	public BaseResponse upload(@RequestParam Picture picture, 
 			@RequestParam MultipartFile file, Authentication auth) throws IOException {
@@ -66,7 +66,7 @@ public class PictureController extends BaseController {
 		return new BaseResponse();
 	}
 
-	@PreAuthorize("hasAuthority('SERVE_USER_PICTURE')")
+	@PreAuthorize("hasAuthority('PICTURE_SERVE')")
 	@GetMapping("/serveOneImageById/{id}")
 	public ResponseEntity<Resource> serveImage(@PathVariable Long id, Authentication auth) {
 		Picture picture = this.pictureService.serveOneImageById(id, (JwtUser) auth.getPrincipal());
@@ -77,7 +77,7 @@ public class PictureController extends BaseController {
 				.body(picture.getFile());
 	}
 	
-	@PreAuthorize("hasAuthority('ADD_OWNER_PICTURE')")
+	@PreAuthorize("hasAuthority('PICTURE_ADD_OWNER')")
 	@PostMapping("/addOwner")
 	public BaseResponse addOwner(@RequestParam Picture picture, 
 			Authentication auth) throws IOException {
@@ -85,28 +85,28 @@ public class PictureController extends BaseController {
 		return new BaseResponse();
 	}
 
-	@PreAuthorize("hasAuthority('FIND_PHOTOGRAPHER_PICTURE')")
+	@PreAuthorize("hasAuthority('PICTURE_FIND_PHOTOGRAPHER')")
 	@GetMapping("/findByPhotographer/{page}/{size}") 
 	public BaseResponse findByPhotographer(@PathVariable Integer page, 
 			@PathVariable Integer size, @PathVariable Long id) {
 		return new BaseResponse(this.pictureService.findByPhotographer(new User() {{ setId(id);}}, page, size));
 	}
 
-	@PreAuthorize("hasAuthority('FIND_OWNER_PICTURE')")
+	@PreAuthorize("hasAuthority('PICTURE_FIND_OWNER')")
 	@GetMapping("/findByOwner/{page}/{size}") 
 	public BaseResponse findByOwner(@PathVariable Integer page, 
 			@PathVariable Integer size, Authentication auth) {
 		return new BaseResponse(this.pictureService.findByOwner((JwtUser) auth.getPrincipal(), page, size));
 	}
 	
-	@PreAuthorize("hasAuthority('DELETE_USER_PICTURE')")
+	@PreAuthorize("hasAuthority('PICTURE_DELETE')")
 	@DeleteMapping("/deleteById")
 	public BaseResponse delete(@RequestParam Picture picture, Authentication auth) throws IOException {		
 		this.pictureService.deleteImage(picture, (JwtUser) auth.getPrincipal());
 		return new BaseResponse();
 	}
 	
-	@PreAuthorize("hasAuthority('SEARCH_PICTURES')")
+	@PreAuthorize("hasAuthority('PICTURE_SEARCH')")
 	@PostMapping("/searchPictures")
 	public BaseResponse searchPictures(@RequestBody List<Location> locations, Authentication auth) {
 		

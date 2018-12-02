@@ -1,6 +1,6 @@
 package com.leandroinacio.picmeapi;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.springframework.boot.CommandLineRunner;
@@ -36,15 +36,22 @@ public class PicmeApiApplication {
 			, IRoleRepository roleRepository, IPermissionRepository permissionRepository) {
 		
 		// Setup admin role
-		Role adm = new Role("Admin", null, null);
-		roleRepository.save(adm);
+		Role adm = new Role("Admin", new ArrayList<Permission>(), new ArrayList<User>());
+		adm = roleRepository.save(adm);
 		
 		// Setup permission
-		Permission prm = new Permission("CREATE_FACE", Arrays.asList(adm));
-		permissionRepository.save(prm);
+		String[] permissions = {"TRAIN_FACES", "USER_FIND", "USER_FIND_ALL", "USER_DELETE", "DELETE_USER_FACES"
+				, "SERVE_USER_FACES", "VIEW_USER_FACES", "VIEW_ALL_FACES", "CREATE_FACE"
+				, "UPSERT_LOCATION", "FIND_LOCATION", "FIND_ALL_LOCATION", "FIND_USER_LOCATION", "DELETE_USER_LOCATION"
+				, "PERMISSION_CRUD", "ROLE_CRUD", "PICTURE_CREATE", "PICTURE_SERVE", "PICTURE_ADD_OWNER", "PICTURE_FIND_PHOTOGRAPHER"
+				, "PICTURE_FIND_OWNER", "PICTURE_DELETE", "PICTURE_SEARCH"};
 		
-		adm.setPermissions(Arrays.asList(prm));
-		roleRepository.save(adm);
+		for(String permission : permissions) {
+			Permission prm = new Permission(permission, adm);
+//			prm = permissionRepository.save(prm);
+		
+			adm.getPermissions().add(prm);
+		}
 		
 		// Setup user
 		User user = new User();
@@ -56,9 +63,12 @@ public class PicmeApiApplication {
 		user.setLastPasswordReset(Calendar.getInstance());
 		user.setRole(adm);
 		
-		User nUser = userRepository.findByEmail("le@le.com");
-		if (nUser == null) {
-			userRepository.save(user);
-		}
+//		User nUser = userRepository.findByEmail("le@le.com");
+//		if (nUser == null) {
+//			userRepository.save(user);
+//		}
+		adm.getUser().add(user);
+		adm = roleRepository.save(adm);
+		
 	}
 }

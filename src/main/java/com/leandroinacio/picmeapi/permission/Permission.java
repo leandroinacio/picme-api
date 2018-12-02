@@ -1,9 +1,8 @@
 package com.leandroinacio.picmeapi.permission;
 
-import java.util.List;
-
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
@@ -25,7 +24,8 @@ public class Permission extends BaseEntity {
 	@NotEmpty
 	private String name;
 	
-	@ManyToMany @JsonIgnore
-	List<Role> roles;
+	@ManyToOne @JsonIgnore
+	@JoinColumn(name="role_id",unique=false,nullable=false,insertable=true)
+	Role role;
 		
 }
