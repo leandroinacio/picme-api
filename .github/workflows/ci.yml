@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - testing-actions
+  pull_request:
+    types: [labeled]
+
+
+jobs:
+  testing-stuff:
+    runs-on: ubuntu-latest
+    steps:
+    - id: nonce
+      run: echo "Success!"
+  
+  build-something:
+    if: ${{ github.event.label.name == 'test' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Returns success
+      run: echo "Uhuuu deu certo mesmo!"
