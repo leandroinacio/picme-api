@@ -5,9 +5,10 @@ on:
     branches:
       - testing-actions
 
+
 jobs:
-  test:
+  testing-stuff:
     runs-on: ubuntu-latest
     steps:
-      - name: Testing
-      run: echo "Success"
+    - id: nonce
+      run: echo "Success!"
