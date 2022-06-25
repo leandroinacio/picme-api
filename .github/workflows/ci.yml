@@ -1,0 +1,13 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - testing-actions
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Testing
+      run: echo "Success"
